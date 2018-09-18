@@ -10,7 +10,7 @@ git checkout feature-plot
 
 One need to copy input ntuples into this place.
 
-```2016SMHTT/tt/analysis/test/Aug30/```
+```2016SMHTT/tt/analysis/test/myntuples/Aug30/```
 
 Ntuples are here : https://www.dropbox.com/sh/a5f5itv565t7phb/AAC48NbYLeC8StJhZWpVxRLTa?dl=0
 
