@@ -5,7 +5,7 @@ if __name__ == "__main__":
     
     samples = ["data","ZTT", "ZJ", "ZL", "TTT", "TTJ", "VVT", "VVJ", "W", "EWKZ"]
     regions = ["AIOS","AISS","ttSS"]
-    cates = ["0jet","boosted","vbf"]
+    cates = ["0jetR","boostedR","vbfR"]
     files = []
     histos = [[],[],[]] # [[hAIOS_0jet,hAISS_0jet,hSS_0jet],[same for boosted],[same for vbf]]
 
@@ -51,8 +51,12 @@ if __name__ == "__main__":
         hQCD = hSF.Clone()
         hQCD.Multiply(histos[k][regions.index("AIOS")],hSF,1,1,"B")
         fout.cd()
-        dir = fout.mkdir("tt_"+cates[k])
-        dir.cd()
+        dir1 = fout.mkdir("tt_"+cates[k])
+        dir1.cd()
+        hQCD.SetName("QCD")
+        hQCD.Write()
+        dir2 = fout.mkdir("ttOS_"+cates[k])
+        dir2.cd()
         hQCD.SetName("QCD")
         hQCD.Write()
         
