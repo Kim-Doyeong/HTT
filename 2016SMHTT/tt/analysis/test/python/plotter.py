@@ -66,10 +66,10 @@ adapt=ROOT.gROOT.GetColor(12)
 new_idx=ROOT.gROOT.GetListOfColors().GetSize() + 1
 trans=ROOT.TColor(new_idx, adapt.GetRed(), adapt.GetGreen(),adapt.GetBlue(), "",0.5)
 categories=["ttOS_0jetR","ttOS_boostedR","ttOS_vbfR"]
-categories2=["0jet","1jet","2orMorejets"]
+categories2=["0jet","1jet","2jets"]
 majors=["ZTT","QCD"]
 minors=["ZL","ZJ","TTT","TTJ","W","VVT","VVJ"]
-signals=["SMH","VBF125","ggH125"]
+signals=["ggH125","VBF125"]#,"WH125","ZH125","SMH"]
 mypalette=["#ffbcfe","#f9cd66","#9feff2","#544e56"]
 ncat = 3
 
@@ -131,9 +131,11 @@ for i in range (0,ncat):
         hist.SetLineStyle(7)
         hist.SetMarkerStyle(0)
         hist.SetLineWidth(4)
-    histlist_sig[0].SetLineColor(ROOT.kRed)
-    histlist_sig[1].SetLineColor(ROOT.kBlack)
-    histlist_sig[2].SetLineColor(ROOT.kBlue)
+    histlist_sig[0].SetLineColor(ROOT.kBlue)
+    histlist_sig[1].SetLineColor(ROOT.kRed)
+    #histlist_sig[2].SetLineColor(ROOT.kMagenta+3)
+    #histlist_sig[3].SetLineColor(ROOT.kBlack)
+    #histlist_sig[4].SetLineColor(ROOT.kRed)
     
     # Setting pad1
     pad1 = ROOT.TPad("pad1","pad1",0,0.50,1,1)
@@ -183,10 +185,13 @@ for i in range (0,ncat):
     errorBand.Draw("e2same")
     # legend
     legende=make_legend()
+    #legende.SetHeader("[ "+categories2[i]+" ]","C")
     legende.AddEntry(Data,"Data","elp")    
-    legende.AddEntry(histlist_sig[0],"SM Higgs(125)x20.0","elp")
+    legende.AddEntry(histlist_sig[0],"ggH Higgs(125)x20.0","l")
     legende.AddEntry(histlist_sig[1],"VBF Higgs(125)x20.0","l")
-    legende.AddEntry(histlist_sig[2],"ggH Higgs(125)x20.0","l")
+    #legende.AddEntry(histlist_sig[2],"WH Higgs(125)x20.0","l")
+    #legende.AddEntry(histlist_sig[3],"ZH Higgs(125)x20.0","l")
+    #legende.AddEntry(histlist_sig[5],"SM Higgs(125)x20.0","elp")
     legende.AddEntry(histlist[0],"Z#rightarrow#tau#tau","f")
     legende.AddEntry(histlist[1],"QCD","f")
     legende.AddEntry(histlist[2],"others","f")
@@ -207,7 +212,9 @@ for i in range (0,ncat):
     categ.SetTextSize ( 0.06 )
     categ.SetTextColor(    1 )
     categ.SetTextFont (   41 )
+    categ.AddText(categories2[i])
     categ.Draw()
+
 
     ''' Making ratio [1]Data/MC'''    
     # Setting up pad
@@ -333,7 +340,7 @@ for i in range (0,ncat):
     h_vbf.SetMarkerStyle(21)
     #h_sig.SetStates(0)
 
-    h_vbf.GetXaxis().SetTitle("Higgs_{p_{T}} [GeV]")
+    h_vbf.GetXaxis().SetTitle("H p_{T} - pt_sv [GeV]")
     
     h_vbf.GetXaxis().SetLabelSize(0.08)
     h_vbf.GetYaxis().SetLabelSize(0.08)
