@@ -13,3 +13,32 @@ doc/final_nominal_012jets_Aug30.root
 	else if (njets==1) is_boosted=true;
         else if (njets>=2) is_VBF=true;
 
+***
+plots
+	
+float varRND = abs(myjet1.Eta()-myjet2.Eta());		
+float binsRND0[] = {0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5}
+float binsRND1[] = {0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0};
+float binsRND2[] = {0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0};
+
+float varRND = Higgs.Pt();
+float binsRND0[] = {0,10,20,30,40,50,60,70,80,90,100};
+float binsRND1[] = {0,50,100,150,200,250,300,350,400,450,500};
+float binsRND2[] = {0,50,100,150,200,250,300,350,400,450,500};
+
+float varRND = mymet.Pt();
+float binsRND0[] = {0,10,20,30,40,50,60,70,80,90,100};
+float binsRND1[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150};
+float binsRND2[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,150,170,200};
+
+float varRND = myjet1.DeltaPhi(myjet2);
+float pi_weight = (3.141592)/10;
+float binsRND0[] = {0,1*pi_weight,2*pi_weight,3*pi_weight,4*pi_weight,5*pi_weight,6*pi_weight,7*pi_weight,8*pi_weight,9*pi_weight,10*pi_weight};
+float binsRND1[] = {0,1*pi_weight,2*pi_weight,3*pi_weight,4*pi_weight,5*pi_weight,6*pi_weight,7*pi_weight,8*pi_weight,9*pi_weight,10*pi_weight};
+float binsRND2[] = {0,1*pi_weight,2*pi_weight,3*pi_weight,4*pi_weight,5*pi_weight,6*pi_weight,7*pi_weight,8*pi_weight,9*pi_weight,10*pi_weight};
+
+
+	float varRND = (mytau1+mytau2).Pt();
+    float binsRND0[] = {0,10,20,30,40,50,60,70,80,90,100};
+    float binsRND1[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,170,200,230};
+    float binsRND2[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300};
