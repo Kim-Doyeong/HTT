@@ -2,6 +2,7 @@
 import ROOT
 import re
 from array import array
+import math
 
 obs = "#tau1 p_{T} [GeV]"
 file=ROOT.TFile("final_nominal.root","r")
@@ -55,8 +56,8 @@ def add_Preliminary():
     lumi.AddText("Preliminary")
     return lumi
 
-def make_legend():
-    output = ROOT.TLegend(0.60, 0.55, 0.95, 0.83, "", "brNDC")
+def make_legend(x1,y1,x2,y2):
+    output = ROOT.TLegend(x1,y1,x2,y2, "", "brNDC")
     #output = ROOT.TLegend(0.2, 0.1, 0.47, 0.65, "", "brNDC")
     output.SetLineWidth(0)
     output.SetLineStyle(0)
@@ -167,7 +168,7 @@ def make_stack(category):
 
 def make_sig(category,sig,color,style,scale):
     h_sig = file.Get(category).Get(sig).Clone()
-    h_sig.SetLineColor(ROOT.kBlue)
+    h_sig.SetLineColor(ROOT.kBlue)    
     h_sig.SetMarkerStyle(0)
     h_sig.SetLineWidth(4)
     h_sig.SetLineStyle(style)
@@ -185,9 +186,10 @@ def make_errorBand(category):
     errorBand.SetLineWidth(0)
     return errorBand
 
-def make_dividedHisto(num,deno,min,max,title):
+def make_dividedHisto(num,deno,min,max,off,title):
     h_ratio = num.Clone()
-    h_ratio.Divide(deno)
+    h_deno = deno.Clone()
+    h_ratio.Divide(h_deno)
     h_ratio.Sumw2()
     if min is not max:
         h_ratio.SetMaximum(max)
@@ -198,17 +200,17 @@ def make_dividedHisto(num,deno,min,max,title):
     h_ratio.SetMarkerStyle(21)
     h_ratio.SetLineStyle(0)
     h_ratio.SetLineColor(1)
-    h_ratio.SetLineWidth(2)
+    h_ratio.SetLineWidth(1)
     h_ratio.GetYaxis().SetTitle(title)
-    h_ratio.GetYaxis().SetTitleOffset(0.4)
-    h_ratio.GetXaxis().SetNdivisions(505)
-    h_ratio.GetYaxis().SetNdivisions(5, True)
-    h_ratio.GetXaxis().SetTitleSize(0.15)
-    h_ratio.GetYaxis().SetTitleSize(0.17)
-    h_ratio.GetXaxis().SetLabelSize(0.11)
+    h_ratio.GetYaxis().SetTitleOffset(off)
+    h_ratio.GetYaxis().SetTitleSize(0.18)
     h_ratio.GetYaxis().SetLabelSize(0.15)
-    h_ratio.GetXaxis().SetTitleFont(42)
     h_ratio.GetYaxis().SetTitleFont(42)
+    h_ratio.GetYaxis().SetNdivisions(5, True)
+    h_ratio.GetXaxis().SetNdivisions(505)
+    h_ratio.GetXaxis().SetTitleSize(0.15)
+    h_ratio.GetXaxis().SetLabelSize(0.11)
+    h_ratio.GetXaxis().SetTitleFont(42)
     return h_ratio
 
 def make_ratioErr(error):
@@ -263,19 +265,15 @@ for cat in cate.keys():
     # Draw sig - flexible!
     SMH = make_sig(cat,"SMH",0,7,30)
     SMH.Draw("esame HIST")
-    ggH = make_sig(cat,"ggH125",0,7,30)
-    VBF = make_sig(cat,"VBF125",0,7,30)
-    WH = make_sig(cat,"WH125",0,7,30)
-    ZH = make_sig(cat,"ZH125",0,7,30)
     Data.Draw("esame")
     # Draw Legend
-    legende = make_legend()
-    legende.AddEntry(Data,"Data","elp")    
-    legende.AddEntry(SMH,"ggH Higgs(125)x30.0","l")
-    legende.AddEntry(histoAll["histBkg"][cate[cat]][0],"Z#rightarrow#tau#tau","f")
-    legende.AddEntry(histoAll["histBkg"][cate[cat]][1],"QCD","f")
-    legende.AddEntry(histoAll["histBkg"][cate[cat]][2],"others","f")
-    legende.Draw()
+    legend = make_legend(0.60, 0.55, 0.95, 0.83)
+    legend.AddEntry(Data,"Data","elp")    
+    legend.AddEntry(SMH,"SM Higgs(125)x30.0","l")
+    legend.AddEntry(histoAll["histBkg"][cate[cat]][0],"Z#rightarrow#tau#tau","f")
+    legend.AddEntry(histoAll["histBkg"][cate[cat]][1],"QCD","f")
+    legend.AddEntry(histoAll["histBkg"][cate[cat]][2],"others","f")
+    legend.Draw()
     # Draw miscellaneous
     lumi = add_lumi()
     lumi.Draw("same")
@@ -297,32 +295,113 @@ for cat in cate.keys():
     p_histoStack.SetFrameBorderMode(0)
     p_histoStack.SetFrameBorderSize(10)
     set_padMargin(p_histoStack,0.18,0.05,0.122,0.0)
+    print "Main histogram pad is made."
+
+    ''' Making signal histogram pad '''
+    p_signal = make_canvas(300,"p_signal")
+    p_signal.cd()
+    ggH = make_sig(cat,"ggH125",0,1,1)
+    VBF = make_sig(cat,"VBF125",0,1,1)
+    WH = make_sig(cat,"WH125",0,1,3)
+    ZH = make_sig(cat,"ZH125",0,1,3)
+    ggH.SetMaximum(ggH.GetMaximum()*1.30)
+    ggH.GetYaxis().SetLabelSize(0.08)
+    ggH.SetLineColor(ROOT.kBlack)  
+    VBF.SetLineColor(ROOT.kGreen+2)  
+    WH.SetLineColor(ROOT.kOrange)  
+    ZH.SetLineColor(ROOT.kRed+1)  
+    ggH.Draw("HIST")
+    VBF.Draw("same HIST")
+    WH.Draw("same HIST")
+    ZH.Draw("same HIST")
+    # Draw Legend
+    legendS = make_legend(0.60, 0.50, 1.00, 0.83)
+    legendS.AddEntry(ggH,"ggH Higgs(125)","elp")
+    legendS.AddEntry(VBF,"VBF Higgs(125)","l")
+    legendS.AddEntry(WH,"WH Higgs(125)x3","l")
+    legendS.AddEntry(ZH,"ZH Higgs(125)x3","l")
+    legendS.Draw()
+    p_signal.SetFillColor(0)
+    p_signal.SetBorderMode(0)
+    p_signal.SetBorderSize(10)
+    p_signal.SetTickx(1)
+    p_signal.SetTicky(1)
+    p_signal.SetFrameFillStyle(0)
+    p_signal.SetFrameLineStyle(0)
+    p_signal.SetFrameLineWidth(1)
+    p_signal.SetFrameBorderMode(0)
+    p_signal.SetFrameBorderSize(10)
+    p_signal.SetBorderSize(10)
+    set_padMargin(p_signal,0.18,0.05,0.0,0.0)
+    print "Signal histogram pad is made."
 
     ''' Making ratio pads '''
+    off = 0.38
     # ratio[1] : Data/MC
     p_ratio_DataMC = make_canvas(150,"p_ratio_DataMC")
     p_ratio_DataMC.cd()
     p_ratio_DataMC.SetGridy()
-    h_ratio_DataMC = make_dividedHisto(Data,error,0.5,1.5,"Data / MC")
+    h_ratio_DataMC = make_dividedHisto(Data,error,0.5,1.5,off,"Data / MC")
     h_ratio_DataMC.Draw("e0p")
     h_ratioErr_DataMC = make_ratioErr(error)
     h_ratioErr_DataMC.Draw("e2same")
     set_padMargin(p_ratio_DataMC,0.18,0.05,0.0,0.0)
+    print "ratio[1] : Data/MC pad is made."
     # ratio[2] : Sig/sqrt(S+B)
     p_ratio_SigBkg = make_canvas(150,"p_ratio_SigBkg")
     p_ratio_SigBkg.cd()
     p_ratio_SigBkg.SetGridy()
-    
-    h_ratio_SigBkg = make_dividedHisto(SMH,error,0,0,"Sig/sqrt(S+B)")
+    h_all = SMH.Clone()
+    h_all.Add(error,1)
+    h_allsqrt = h_all.Clone()
+    for j in range(0,h_allsqrt.GetSize()-2):
+        h_all.SetBinContent(j,math.sqrt(h_allsqrt.GetBinContent(j)))
+    h_ratio_SigBkg = make_dividedHisto(SMH,h_allsqrt,0,0,off,"S/sqrt(S+B)")
     h_ratio_SigBkg.Draw("e0p")
     set_padMargin(p_ratio_SigBkg,0.18,0.05,0.0,0.0)
+    print "ratio[2] : Sig/sqrt(S+B) pad is made."
     # ratio[3] : VBF/ggH
-    p_ratio_VBFggH = make_canvas(150,"p_ratio")
+    p_ratio_VBFggH = make_canvas(150,"p_ratio_VBFggH")
     p_ratio_VBFggH.cd()
     p_ratio_VBFggH.SetGridy()
-    h_ratio_VBFggH = make_dividedHisto(VBF,ggH,0,0,"VBF/ggH")
+    h_ratio_VBFggH = make_dividedHisto(VBF,ggH,0,0,off,"VBF/ggH")
     h_ratio_VBFggH.Draw("e0p")
     set_padMargin(p_ratio_VBFggH,0.18,0.05,0.0,0.0)
+    print "ratio[3] : VBF/ggH pad is made."
+    off = 0.25
+    # ratio[4] : WH/ZH
+    p_ratio_WHZH = make_canvas(150,"p_ratio_WHZH")
+    p_ratio_WHZH.cd()
+    p_ratio_WHZH.SetGridy()
+    h_ratio_WHZH = make_dividedHisto(WH,ZH,0,0,off,"WH/ZH")
+    h_ratio_WHZH.Draw("e0p")
+    set_padMargin(p_ratio_WHZH,0.18,0.05,0.0,0.0)
+    print "ratio[4] : WH/ZH pad is made."
+    # ratio[5] : (WH+ZH)/(VBF+ggH) 
+    p_ratio_VHsep1 = make_canvas(150,"p_ratio_VHsep1")
+    p_ratio_VHsep1.cd()
+    p_ratio_VHsep1.SetGridy()
+    h_VH = make_sig(cat,"WH125",0,1,1)
+    h_ZH = make_sig(cat,"ZH125",0,1,1)
+    h_VH.Add(h_ZH,1)
+    h_Vg = make_sig(cat,"VBF125",0,1,1)
+    h_ggH = make_sig(cat,"ggH125",0,1,1)
+    h_Vg.Add(h_ggH,1)    
+    h_ratio_VHsep1 = make_dividedHisto(h_VH,h_Vg,0,0,off,"VH/(otherSig) ")
+    h_ratio_VHsep1.Draw("e0p")
+    set_padMargin(p_ratio_VHsep1,0.18,0.05,0.0,0.0)
+    print "ratio[5] : (WH+ZH)/(VBF+ggH) pad is made."
+    # ratio[6] : (WH+ZH)/(VBF+ggH+bkg) 
+    p_ratio_VHsep2 = make_canvas(150,"p_ratio_VHsep2")
+    p_ratio_VHsep2.cd()
+    p_ratio_VHsep2.SetGridy()
+    h_allbutVH = h_Vg.Clone()
+    h_allbutVH.Add(error,1)    
+    h_ratio_VHsep2 = make_dividedHisto(h_VH,h_allbutVH,0,0,off,"VH/(others) ")
+    h_ratio_VHsep2.Draw("e0p")
+    set_padMargin(p_ratio_VHsep2,0.18,0.05,0.0,0.0)
+    print "ratio[6] : (WH+ZH)/(VBF+ggH+bkg) pad is made."
+
 
 
 
@@ -373,7 +452,66 @@ for cat in cate.keys():
     obsPave.Draw()
 
     # Save plot
-    plot1.SaveAs("plots/testPlotter1_"+cate[cat]+".pdf")
+    plot1.SaveAs("plots/general_"+cate[cat]+".pdf")
+    
+
+    
+
+    ################################################################################
+    ##                                                                            ##
+    ##  Plot[2]                                                                   ##
+    ##  1. Main histogram                                                         ##
+    ##  2. Signal histogram                                                       ##
+    ##  3. WH/ZH                  : To make sure if WH and ZH are similar         ##
+    ##  4. (WH+ZH)/(VBF+ggH)      : To see separation between VH and (VBF+ggH)    ##
+    ##  5. (WH+ZH)/(VBF+ggH+Bkg)  : To see separation between VH and others       ##
+    ##                                                                            ##
+    ################################################################################
+
+    # Make canvas
+    plot2 = make_canvas(1800,"plot2")
+    # Stick main histogram pad
+    plot2.cd()
+    pad_Main = make_stackPad(0.60,1.0)
+    pad_Main.Draw()
+    pad_Main.cd()
+    p_histoStack.DrawClonePad()    
+    SMH.Draw("esame HIST")
+    # Stick Signal histogram
+    plot2.cd()
+    pad_Signal = make_stackPad(0.40,0.60)
+    pad_Signal.Draw()
+    pad_Signal.cd()
+    p_signal.DrawClonePad()
+    # Stick ratio WH/ZH
+    plot2.cd()
+    pad_WHZH = make_stackPad(0.29,0.40)
+    pad_WHZH.Draw()
+    pad_WHZH.cd()
+    p_ratio_WHZH.DrawClonePad()
+    # Stick ratio VH/(VBF+ggH)
+    plot2.cd()
+    pad_VHsep1 = make_stackPad(0.18,0.29)
+    pad_VHsep1.Draw()
+    pad_VHsep1.cd()
+    p_ratio_VHsep1.DrawClonePad() 
+    # Stick ratio VH/(VBF+ggH+Bkg)
+    plot2.cd()
+    pad_VHsep2 = make_stackPad(0.07,0.18)
+    pad_VHsep2.Draw()
+    pad_VHsep2.cd()
+    p_ratio_VHsep2.DrawClonePad() 
+    # Stick title of the plot
+    plot2.cd()
+    pad_obs = make_stackPad(0,0.07)
+    pad_obs.Draw()
+    pad_obs.cd()
+    set_padMargin(pad_obs,0,0,0,0)
+    obsPave = make_titleTag()
+    obsPave.Draw()
+
+    # Save plot
+    plot2.SaveAs("plots/VHsep_"+cate[cat]+".pdf")
     
 
     
