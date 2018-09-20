@@ -98,7 +98,7 @@ def add_cate(category):
     return categ
 
 def make_canvas(hight,c_name):
-    c=ROOT.TCanvas(c_name,"",0,0,600,hight)
+    c=ROOT.TCanvas(c_name,c_name,0,0,600,hight)
     return c
 
 def set_padMargin(pad,left,right,top,bottom):
@@ -152,23 +152,23 @@ def call_histos():
 
 def set_dataStyle(cat):
     Data = histoAll["histData"][cate[cat]].Clone()
-    Data.GetXaxis().SetTitle("")
-    Data.GetXaxis().SetLabelSize(0)
-    Data.GetXaxis().SetTitleSize(0)
-    Data.GetXaxis().SetNdivisions(505)
-    #Data.GetYaxis().SetTitle("Events/bin")    
-    Data.GetYaxis().SetTitleSize(0.7)
-    Data.GetYaxis().SetTitleOffset(0.8)
-    Data.GetYaxis().SetLabelSize(0.20)
-    Data.GetYaxis().SetLabelFont(42)
-    Data.GetYaxis().SetLabelOffset(0.38)
-    Data.GetYaxis().SetLabelSize(0.03)#0.06
-        #Data.SetTitle("")
     Data.SetMarkerStyle(20)
     Data.SetLineColor(1)
     Data.SetMarkerSize(1)
     Data.SetMaximum(Data.GetMaximum()*1.60)#,stack.GetMaximum()*1.20))
     Data.SetMinimum(0)
+    Data.SetTitle("")
+    Data.GetXaxis().SetTitle("")
+    Data.GetXaxis().SetLabelSize(0)
+    Data.GetXaxis().SetTitleSize(0)
+    Data.GetXaxis().SetNdivisions(505)
+    Data.GetYaxis().SetTitle("Events/bin")    
+    Data.GetYaxis().SetTitleOffset(1.4)
+    Data.GetYaxis().SetTitleSize(0.055)
+    Data.GetYaxis().SetLabelOffset(0.01)
+    Data.GetYaxis().SetLabelSize(0.045)
+    Data.GetYaxis().SetLabelFont(42)
+
     return Data
 
 def make_stack(category):
@@ -181,7 +181,7 @@ def make_stack(category):
         h_bkg.SetFillColor(ROOT.TColor.GetColor(mypalette[c_index]))
         c_index+=1
         stack.Add(h_bkg)
-    stack.SetMaximum(stack.GetMaximum()*1.60)
+    #stack.SetMaximum(stack.GetMaximum()*1.60)
     return stack
 
 def make_sig(category,sig,color,style,scale):
@@ -221,16 +221,17 @@ def make_dividedHisto(num,deno,min,max,off,title,end):
     h_ratio.SetLineWidth(1)
     h_ratio.GetYaxis().SetTitle(title)
     h_ratio.GetYaxis().SetTitleOffset(off)
-    h_ratio.GetYaxis().SetTitleSize(0.18)
-    h_ratio.GetYaxis().SetLabelSize(0.18) #
+    h_ratio.GetYaxis().SetTitleSize(0.17)
+    h_ratio.GetYaxis().SetLabelSize(0.17) #
     if end is 1:
-        h_ratio.GetYaxis().SetTitleSize(0.15)
-        h_ratio.GetYaxis().SetLabelSize(0.15) #
+        h_ratio.GetYaxis().SetTitleOffset(off*1.17)
+        h_ratio.GetYaxis().SetTitleSize(0.14)
+        h_ratio.GetYaxis().SetLabelSize(0.14) #
     h_ratio.GetYaxis().SetTitleFont(42)
     h_ratio.GetYaxis().SetNdivisions(5, True)
     h_ratio.GetXaxis().SetNdivisions(505)
-    h_ratio.GetXaxis().SetTitleSize(0.15)
-    h_ratio.GetXaxis().SetLabelSize(0.18) #
+    h_ratio.GetXaxis().SetTitleSize(0.14)
+    h_ratio.GetXaxis().SetLabelSize(0.14) #
     h_ratio.GetXaxis().SetTitleFont(42)
     return h_ratio
 
@@ -283,12 +284,10 @@ for cat in cate.keys():
     p_histoStack.cd()
     # Draw data
     Data = set_dataStyle(cat)
-    #Data = histoAll["histData"][cate[cat]]
-    Data.GetYaxis().SetTitle("Events/bin")    
     Data.Draw("e")
     # Draw bkg
     stack = make_stack(cate[cat])
-    stack.Draw("HIST")
+    stack.Draw("HIST same")
     # Draw error band
     error = make_errorBand(cate[cat])
     error.Draw("e2same")
@@ -308,10 +307,6 @@ for cat in cate.keys():
     prelim.Draw("same")
     categ = add_cate(cate[cat])
     categ.Draw("same")
-    #Data.GetYaxis().SetLabelSize(0.10)
-    Data.GetYaxis().SetTitleSize(0.10)
-    Data.GetYaxis().SetTitle("Events/bin")
-    Data.GetYaxis().SetTitleOffset(0.55) #######
     Data.Draw("esame")
     p_histoStack.SetFillColor(0)
     p_histoStack.SetBorderMode(0)
@@ -336,9 +331,9 @@ for cat in cate.keys():
     ZH = make_sig(cat,"ZH125",0,1,3)
     ggH.SetMaximum(ggH.GetMaximum()*1.30)
     ggH.GetYaxis().SetLabelSize(0.10)
-    ggH.GetYaxis().SetTitleSize(0.10)
+    ggH.GetYaxis().SetTitleSize(0.12)
     ggH.GetYaxis().SetTitle("Events/bin")
-    ggH.GetYaxis().SetTitleOffset(0.55) #######
+    ggH.GetYaxis().SetTitleOffset(0.6)
     ggH.SetLineColor(ROOT.kBlack)  
     VBF.SetLineColor(ROOT.kGreen+2)  
     WH.SetLineColor(ROOT.kOrange)  
@@ -406,12 +401,14 @@ for cat in cate.keys():
     print "ratio[3] : VBF/ggH pad is made."
 
 
-    off = 0.30
+    off = 0.44
     # ratio[4] : WH/ZH
     p_ratio_WHZH = make_canvas(150,"p_ratio_WHZH")
     p_ratio_WHZH.cd()
     p_ratio_WHZH.SetGridy()
     h_ratio_WHZH = make_dividedHisto(WH,ZH,0,0,off,"WH/ZH",0)
+    h_ratio_WHZH.GetYaxis().SetLabelSize(0.175)
+    h_ratio_WHZH.GetYaxis().SetTitleSize(0.175)    
     h_ratio_WHZH.Draw("e0p")
     set_padMargin(p_ratio_WHZH,0.18,0.05,0.0,0.0)
     print "ratio[4] : WH/ZH pad is made."
@@ -425,7 +422,9 @@ for cat in cate.keys():
     h_Vg = make_sig(cat,"VBF125",0,1,1)
     h_ggH = make_sig(cat,"ggH125",0,1,1)
     h_Vg.Add(h_ggH,1)    
-    h_ratio_VHsep1 = make_dividedHisto(h_VH,h_Vg,0,0,off,"VH/(otherSig) ",0)
+    h_ratio_VHsep1 = make_dividedHisto(h_VH,h_Vg,0,0,off,"VH/(Sig-VH) ",0)
+    h_ratio_VHsep1.GetYaxis().SetLabelSize(0.175)
+    h_ratio_VHsep1.GetYaxis().SetTitleSize(0.175)    
     h_ratio_VHsep1.Draw("e0p")
     set_padMargin(p_ratio_VHsep1,0.18,0.05,0.0,0.0)
     print "ratio[5] : (WH+ZH)/(VBF+ggH) pad is made."
@@ -437,7 +436,10 @@ for cat in cate.keys():
     h_allbutVH.Add(error,1)    
     h_ratio_VHsep2 = make_dividedHisto(h_VH,h_allbutVH,0,0,off,"VH/(others) ",1)
     h_ratio_VHsep2.Draw("e0p")
-    h_ratio_VHsep2.GetXaxis().SetLabelSize(0.25)  
+    h_ratio_VHsep2.GetXaxis().SetLabelSize(0.165)  
+    h_ratio_VHsep2.GetYaxis().SetLabelSize(0.165)
+    h_ratio_VHsep2.GetYaxis().SetTitleOffset(off*1.075)
+    h_ratio_VHsep2.GetYaxis().SetTitleSize(0.165)    
     set_padMargin(p_ratio_VHsep2,0.18,0.05,0.0,0.2)
     print "ratio[6] : (WH+ZH)/(VBF+ggH+bkg) pad is made."
 
@@ -509,13 +511,13 @@ for cat in cate.keys():
     p_ratio_SigBkg.DrawClonePad() 
     # Stick ratio VBF/ggH
     plot1.cd()
-    pad_VBFggH = make_stackPad(0.08,0.22)
+    pad_VBFggH = make_stackPad(0.05,0.22)
     pad_VBFggH.Draw()
     pad_VBFggH.cd()
     p_ratio_VBFggH.DrawClonePad() 
     # Stick title of the plot
     plot1.cd()
-    pad_obs = make_stackPad(0,0.075)
+    pad_obs = make_stackPad(0,0.06)
     pad_obs.Draw()
     pad_obs.cd()
     set_padMargin(pad_obs,0,0,0,0)
@@ -540,10 +542,11 @@ for cat in cate.keys():
     ################################################################################
 
     # Make canvas
-    plot2 = make_canvas(1800,"plot2")
+    plot2 = ROOT.TCanvas("plot2","",0,0,480,800)
+    #plot2 = make_canvas(2000,"plot2")
     # Stick main histogram pad
     plot2.cd()
-    pad_Main = make_stackPad(0.60,1.0)
+    pad_Main = make_stackPad(0.6,1.0)
     pad_Main.Draw()
     pad_Main.cd()
     p_histoStack.DrawClonePad()    
@@ -552,7 +555,7 @@ for cat in cate.keys():
     legend.Draw()
     # Stick Signal histogram
     plot2.cd()
-    pad_Signal = make_stackPad(0.40,0.60)
+    pad_Signal = make_stackPad(0.40,0.6)
     pad_Signal.Draw()
     pad_Signal.cd()
     p_signal.DrawClonePad()
@@ -570,13 +573,13 @@ for cat in cate.keys():
     p_ratio_VHsep1.DrawClonePad() 
     # Stick ratio VH/(VBF+ggH+Bkg)
     plot2.cd()
-    pad_VHsep2 = make_stackPad(0.07,0.18)
+    pad_VHsep2 = make_stackPad(0.05,0.18)
     pad_VHsep2.Draw()
     pad_VHsep2.cd()
     p_ratio_VHsep2.DrawClonePad() 
     # Stick title of the plot
     plot2.cd()
-    pad_obs = make_stackPad(0,0.065)
+    pad_obs = make_stackPad(0,0.055)
     pad_obs.Draw()
     pad_obs.cd()
     set_padMargin(pad_obs,0,0,0,0)
@@ -628,7 +631,7 @@ for cat in cate.keys():
     p_ratio_senVBF.DrawClonePad()
     # Stick sensitivity - S : SMH
     plot3.cd()
-    pad_senggH = make_stackPad(0.06,0.22)
+    pad_senggH = make_stackPad(0.05,0.22)
     pad_senggH.Draw()
     pad_senggH.cd()
     p_ratio_senggH.DrawClonePad() 
@@ -646,8 +649,3 @@ for cat in cate.keys():
     
 
     
-
-
-
-
-
