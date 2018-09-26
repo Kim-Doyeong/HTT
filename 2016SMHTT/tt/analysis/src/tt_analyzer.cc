@@ -37,6 +37,7 @@
 #include "../include/btagSF.h"
 #include "../include/scenario_info.h"
 #include "../include/zmumuSF.h"
+#include "../include/EmbedWeight.h"
 
 int main(int argc, char** argv) {
     
@@ -76,6 +77,11 @@ int main(int argc, char** argv) {
     RooWorkspace *w2 = (RooWorkspace*)fw2.Get("w");
     fw2.Close();
 
+    // Embadded weight
+    TFile f_embadded("weightROOTs/htt_scalefactors_v16_9_embedded.root");
+    RooWorkspace *wEmbed = (RooWorkspace*)f_embadded.Get("w");
+    f_embadded.Close();
+
     // D.Kim
     const char *scriptDirectoryName = "./../python/";
     Py_Initialize();
@@ -90,7 +96,9 @@ int main(int argc, char** argv) {
     // Lumi weight  
     float w_lumi = lumiWeight(sample, ngen);
     if (w_lumi==0) std::cout << std::endl << "!!!!!!!!!!!!!!!!!!!!!!!! ATTENTION - can't find lumi weight. Check the sample. !!!!!!!!!!!!!!!!!!!!!!!!" << std::endl << std::endl;
-    weight = w_lumi;
+    else weight = w_lumi;
+
+
 
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
     std::cout.precision(10);
@@ -205,52 +213,23 @@ int main(int argc, char** argv) {
     //arbre->SetBranchAddress("ME_bkg",&ME_bkg); // What we actually use.
 
     scenario_info scenario(arbre, shape);
-    
-    //float bins0[] = {0, 40, 60, 70, 80, 90, 100, 110, 120, 130, 150, 200, 250}; //VBF
-    //float bins1[] = {0, 40, 60, 70, 80, 90, 100, 110, 120, 130, 150, 200, 250}; //VBF
-    //float bins0[] = {0,10,20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300}; //VBF
-    //float bins1[] = {0,10,20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300}; //VBF
-    //    float bins0[] = {0,50,100,150,200,250,300,350,400,450,500}; //fig50 H pT
-    //    float bins1[] = {0,50,100,150,200,250,300,350,400,450,500}; //fig50 H pT
-
-    
     // D.Kim : AN line 791~795
     //Binning for 0jet cat. 1D: Msv. In AN it was 10GeV binning / official data card combined 0~50 as one bin
     float bins0[] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300};
     float bins1[] = {0,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300};
-    //float bins0[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300};
-    //float bins1[] = {0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300};
-    //float bins0[] = {0,20,40,60,80,100,120,140,160,180,200,220,240,260,280,300};
-    //float bins1[] = {0,20,40,60,80,100,120,140,160,180,200,220,240,260,280,300};
     //Binning for 1jet cat, x-axis: HpT
     float bins11[] = {0,100,170,300,10000};
     //Binning for 1jet cat, y-axis: Msv
     float bins12[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
-
     //Binning for 2jet cat, x-axis: Mjj
     float bins21[] = {0,300,500,800,10000};
     //binning for 2jet cat, x-axis: Dbkg_VBF
     //float bins21[] = {0.0,0.3,0.6,0.9,1.0};
-    //Binning for 2jet cat, x-axis: NN_disc
-    //float bins21[] = {0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
-    //float bins21[] = {0.0,0.5,0.7,0.8,1.0};
     //Binning for 2jet cat, y-axis: Msv
     float bins22[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
 
-    //float bins1[] = {0,50,100,150,200,250,300,350,400,450,500};//,550,600,650,700,750,800,850,900,950,1000,1050}; //fig50 H pT
-    //float bins0[] = {0,80,160,240,320,400,480,560,640,720,800,880,960,1040,1120,1200,1280,1360};
-    //float bins1[] = {0,80,160,240,320,400,480,560,640,720,800,880,960,1040,1120,1200,1280,1360};
-    //float bins0[] = {0,25,50,75,100,120,140,160,180,200,225,250,275,300,324,350,375,400,425,450,475,500,550};//,600,650,700,750,800};//,850,900,950,1000,1050,1100,1150,1200,1250,1300}; // mjj 800
-    //float bins1[] = {0,25,50,75,100,120,140,160,180,200,225,250,275,300,324,350,375,400,425,450,475,500,550};//,600,650,700,750,800};//,850,900,950,1000,1050,1100,1150,1200,1250,1300}; // mjj 800
-    
-    //float bins0[] = {-5.0,-4.5,-4.0,-3.5,-3.0,-2.5,-2.0,-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0};
-    //float bins1[] = {-5.0,-4.5,-4.0,-3.5,-3.0,-2.5,-2.0,-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0};
-    //float bins0[] = {0,30,60,90,120,150,180,210,240,270,300,330,360,390};
-    //float bins1[] = {0,30,60,90,120,150,180,210,240,270,300,330,360,390};
-
     int  binnum0 = sizeof(bins0)/sizeof(Float_t) - 1;
     int  binnum1 = sizeof(bins1)/sizeof(Float_t) - 1;
-
     int  binnum11 = sizeof(bins11)/sizeof(Float_t) - 1;
     int  binnum12 = sizeof(bins12)/sizeof(Float_t) - 1;
     int  binnum21 = sizeof(bins21)/sizeof(Float_t) - 1;
@@ -262,36 +241,6 @@ int main(int argc, char** argv) {
     TH1F* hy_boosted = new TH1F ("hy_boosted", "hy_boosted", binnum12, bins12); hy_boosted->Sumw2();
     TH1F* hx_vbf = new TH1F ("hx_vbf", "hx_vbf", binnum21, bins21); hx_vbf->Sumw2();
     TH1F* hy_vbf = new TH1F ("hy_vbf", "hy_vbf", binnum22, bins22); hy_vbf->Sumw2();
-
-    // Categories
-    //TH1F* ojet = new TH1F ("ojet", "ojet", 100, -0.10, 0.10); ojet->Sumw2();
-    //TH1F* boosted = new TH1F ("boosted", "boosted", 100, -0.10, 0.10); boosted->Sumw2();
-    //TH1F* vbf = new TH1F ("vbf", "vbf", 100, -0.10, 0.10); vbf->Sumw2();
-
-    //KK Change to 2D histograms
-
-    /*
-    std::vector<TH1F*> h0_OS;
-    std::vector<TH1F*> h0_SS;
-    std::vector<TH1F*> h0_AIOS;
-    std::vector<TH1F*> h0_AISS;
-    std::vector<TH1F*> h1_OS;
-    std::vector<TH1F*> h1_SS;
-    std::vector<TH1F*> h1_AIOS;
-    std::vector<TH1F*> h1_AISS;
-    std::vector<TH1F*> h2_OS;
-    std::vector<TH1F*> h2_SS;
-    std::vector<TH1F*> h2_AIOS;
-    std::vector<TH1F*> h2_AISS;
-    std::vector<TH1F*> h3_OS;
-    std::vector<TH1F*> h3_SS;
-    std::vector<TH1F*> h3_AIOS;
-    std::vector<TH1F*> h3_AISS;
-    std::vector<TH1F*> h_OS;
-    std::vector<TH1F*> h_SS;
-    std::vector<TH1F*> h_AIOS;
-    std::vector<TH1F*> h_AISS;
-    */
 
     // h0_ : 0jet, h1_ : boosted, h2_ : vbf, h3_ : vh, h2M*_ : vbf with MELA, h4M_ : 2jets with MEAL  h_ : inclusive
     std::vector<TH1F*> h0_OS;
@@ -306,30 +255,6 @@ int main(int argc, char** argv) {
     std::vector<TH2F*> h2_SS;
     std::vector<TH2F*> h2_AIOS;
     std::vector<TH2F*> h2_AISS;
-
-    /*
-    std::vector<TH2F*> h2M1_OS;
-    std::vector<TH2F*> h2M1_SS;
-    std::vector<TH2F*> h2M1_AIOS;
-    std::vector<TH2F*> h2M1_AISS;
-    std::vector<TH2F*> h2M2_OS;
-    std::vector<TH2F*> h2M2_SS;
-    std::vector<TH2F*> h2M2_AIOS;
-    std::vector<TH2F*> h2M2_AISS;
-    std::vector<TH2F*> h2M3_OS;
-    std::vector<TH2F*> h2M3_SS;
-    std::vector<TH2F*> h2M3_AIOS;
-    std::vector<TH2F*> h2M3_AISS;
-    std::vector<TH2F*> h4M1_OS; // in test cate - ex) 2jets
-    std::vector<TH2F*> h4M1_SS;
-    std::vector<TH2F*> h4M1_AIOS;
-    std::vector<TH2F*> h4M1_AISS;
-    std::vector<TH2F*> h4M2_OS;
-    std::vector<TH2F*> h4M2_SS;
-    std::vector<TH2F*> h4M2_AIOS;
-    std::vector<TH2F*> h4M2_AISS;
-    */
-
     std::vector<TH2F*> h3_OS;
     std::vector<TH2F*> h3_SS;
     std::vector<TH2F*> h3_AIOS;
@@ -345,12 +270,6 @@ int main(int argc, char** argv) {
     std::vector<TH1F*> h_trgSF_FR;
     std::vector<TH1F*> h_trgSF_RF;
     std::vector<TH1F*> h_trgSF_FF;
-
-    /*
-    // D.Kim : MELA 1D
-    std::vector<TH1F*> h_MELA_VBF;
-    std::vector<TH1F*> h_MELA_ggH;
-    */
 
     TString postfix="";
     //For shape systematics
@@ -450,28 +369,29 @@ int main(int argc, char** argv) {
     std::cout << "2" << std::endl;    
     Int_t nentries_wtn = (Int_t) arbre->GetEntries();
     for (Int_t i = 0; i < nentries_wtn; i++) {
+      std::cout << "Start loop" << std::endl;
       arbre->GetEntry(i);
       if (i % 1000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
       fflush(stdout);
       // DoubleTau trigger
-      if (sample=="data_obs" && input=="myntuples/data_H.root") {
-	if(!passDoubleTauCmbIso35) continue;
-	if(!matchDoubleTauCmbIso35_1  || !matchDoubleTauCmbIso35_2) continue;
-	if(!filterDoubleTauCmbIso35_1 || !filterDoubleTauCmbIso35_2) continue;
+      if (sample!="embedded") {
+	if (sample=="data_obs" && input=="myntuples/data_H.root") {
+	  if(!passDoubleTauCmbIso35) continue;
+	  if(!matchDoubleTauCmbIso35_1  || !matchDoubleTauCmbIso35_2) continue;
+	  if(!filterDoubleTauCmbIso35_1 || !filterDoubleTauCmbIso35_2) continue;
+	}
+	if (sample=="data_obs" && input=="myntuples/data_H.root") {
+	  if (!passDoubleTau35) continue;
+	  if (!matchDoubleTau35_1  || !matchDoubleTau35_2) continue;
+	  if (!filterDoubleTau35_1 || !filterDoubleTau35_2) continue;
+	}
+	if (sample!="data_obs") {
+	  bool t35     =  passDoubleTau35 && filterDoubleTau35_1 && filterDoubleTau35_2 && matchDoubleTau35_1 && matchDoubleTau35_2;
+	  bool tcomb35 =  passDoubleTauCmbIso35 && filterDoubleTauCmbIso35_1 && filterDoubleTauCmbIso35_2 && matchDoubleTauCmbIso35_1 && matchDoubleTauCmbIso35_2;
+	  if (  !t35 && !tcomb35 ) continue;
+	}
       }
-      if (sample=="data_obs" && input=="myntuples/data_H.root") {
-	if (!passDoubleTau35) continue;
-	if (!matchDoubleTau35_1  || !matchDoubleTau35_2) continue;
-	if (!filterDoubleTau35_1 || !filterDoubleTau35_2) continue;
-      }
-
-      if (sample!="data_obs") {
-	bool t35     =  passDoubleTau35 && filterDoubleTau35_1 && filterDoubleTau35_2 && matchDoubleTau35_1 && matchDoubleTau35_2;
-	bool tcomb35 =  passDoubleTauCmbIso35 && filterDoubleTauCmbIso35_1 && filterDoubleTauCmbIso35_2 && matchDoubleTauCmbIso35_1 && matchDoubleTauCmbIso35_2;
-	if (  !t35 && !tcomb35 ) continue;
-      }
-
-
+      //std::cout << "point 0" << std::endl;
       float jpt_1 = scenario.get_jpt_1();
       float jpt_2 = scenario.get_jpt_2();
       float njets = scenario.get_njets();
@@ -495,15 +415,22 @@ int main(int argc, char** argv) {
 	mytau1.SetPtEtaPhiM(pt_2,eta_2,phi_2,m_2);
       }
       
+      //std::cout << "point 1" << std::endl;
       if (mytau1.DeltaR(mytau2) < 0.5) continue;
+      //std::cout << "point 2" << std::endl;
       if (againstElectronVLooseMVA6_1 < 0.5) continue; // L773
       if (againstElectronVLooseMVA6_2 < 0.5) continue;
+      //std::cout << "point 3" << std::endl;
       if (againstMuonLoose3_1 < 0.5) continue; //774
       if (againstMuonLoose3_2 < 0.5) continue;
+      //std::cout << "point 4" << std::endl;
       // Change && -> ||
       if (byLooseIsolationMVArun2v1DBoldDMwLT_1 < 0.5 || byLooseIsolationMVArun2v1DBoldDMwLT_2 < 0.5) continue; // Fig 43(a)
+      //std::cout << "point 5" << std::endl;
       if (extramuon_veto) continue;
+      //std::cout << "point 6" << std::endl;
       if (extraelec_veto) continue;
+      //std::cout << "point 7" << std::endl;
       //float sf_trg=1.0;
       float sf_id=1.0;
       //float eff_tau=1.0;
@@ -569,7 +496,29 @@ int main(int argc, char** argv) {
 	else if (numGenJets==4 || input=="myntuples/DY4.root")
 	  weight=0.3938184351;
       }
-      
+
+      float Stitching_Weight= 1.0;
+      if (sample=="embedded") {
+	if ((run >= 272007) && (run < 275657)) Stitching_Weight=(1.0/0.899);
+	if((run >= 275657) && (run < 276315))  Stitching_Weight=(1.0/0.881);
+	if((run >= 276315) && (run < 276831))  Stitching_Weight=(1.0/0.877);
+	if((run >= 276831) && (run < 277772))  Stitching_Weight=(1.0/0.939);
+	if((run >= 277772) && (run < 278820))  Stitching_Weight=(1.0/0.936);
+	if((run >= 278820) && (run < 280919))  Stitching_Weight=(1.0/0.908);
+	if((run >= 280919) && (run < 284045))  Stitching_Weight=(1.0/0.962);
+      }
+      vector<double> CorrFactor=EmdWeight_Tau(wEmbed,mytau2.Pt(),mytau2.Eta(),t1_decayMode);
+      // note: iso_1 should be the lepton isolation
+      double tau_id_scalefactor = CorrFactor[1];
+      //double muon_iso_scalefactor = CorrFactor[5];
+      //double muon_trg_efficiency = CorrFactor[6];
+      double TotEmbedWeight=tau_id_scalefactor;//*muon_iso_scalefactor*muon_trg_efficiency;
+      // This is how to access the data to mc trigger ratio (for single muon trigger used during the embedding procedure)
+      //float WEIGHT_sel_trg_ratio= m_sel_trg_ratio(wEmbed,mymu.Pt(),mymu.Eta(),mytau.Pt(),mytau.Eta());
+      float Final_weight=TotEmbedWeight * Stitching_Weight;// * WEIGHT_sel_trg_ratio;
+      std::cout << tau_id_scalefactor << std::endl;
+      weight*=Final_weight;
+
       // Multiply some weights and scale factors together
       // ID and iso corrections
       float correction=sf_id;
@@ -682,9 +631,9 @@ int main(int argc, char** argv) {
       
       for (int k=0; k<nbhist; ++k){
 	
-	float var2=m_sv; 
-	float var1_1=pt_sv;
-
+	float var2=mytau1.Pt();
+	float var1_1=mytau1.Pt();
+	//std::cout << var2 << std::endl;
 	TLorentzVector myjet1;
 	myjet1.SetPtEtaPhiM(jpt_1,jeta_1,jphi_1,0);
 	//myjet1.SetPtEtaPhiM(scenario.get_jpt_1(),jeta_1,jphi_1,0);
@@ -818,6 +767,8 @@ int main(int argc, char** argv) {
 	    h0_OS[k]->Fill(var,weight2*aweight);
 	    if (tes==0)
 	      h_0jet->Fill(var,weight2*aweight);
+	    //std::cout << var << std::endl;
+	    //std::cout << weight2*aweight << std::endl;
 	  }
 	  if (is_boosted && signalRegion && charge1*charge2<0){
 	    h1_OS[k]->Fill(var1_1,var2,weight2*aweight);
