@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
     //arbre->SetBranchAddress("ME_sm_VBF",&ME_sm_VBF); // What we actually use.
     //arbre->SetBranchAddress("ME_sm_ggH",&ME_sm_ggH);
     //arbre->SetBranchAddress("ME_bkg",&ME_bkg); // What we actually use.
-    arbre->SetBranchAddress("Dbkg_ggH",&Dbkg_ggH);
+
     scenario_info scenario(arbre, shape);
     
     // D.Kim : AN line 791~795
@@ -214,21 +214,17 @@ int main(int argc, char** argv) {
     //Binning for 1jet cat, y-axis: Msv
     float bins12[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
     //Binning for 2jet cat, x-axis: Mjj
-    //float bins21[] = {0,300,500,800,10000};
+    float bins21[] = {0,300,500,800,10000};
     //binning for 2jet cat, x-axis: Dbkg_VBF
     //float bins21[] = {0.0,0.3,0.6,0.9,1.0};
-    float bins21[] = {0.0,0.02,0.04,0.06,0.08,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};//0.92,0.94,0.96,0.98,1.0};
     //Binning for 2jet cat, y-axis: Msv
     float bins22[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
 
-    float pi_weight = (3.141592)/10;
-    float binsRND0[] = {0,1*pi_weight,2*pi_weight,3*pi_weight,4*pi_weight,5*pi_weight,6*pi_weight,7*pi_weight,8*pi_weight,9*pi_weight,10*pi_weight};
-    float binsRND1[] = {0,1*pi_weight,2*pi_weight,3*pi_weight,4*pi_weight,5*pi_weight,6*pi_weight,7*pi_weight,8*pi_weight,9*pi_weight,10*pi_weight};
-    float binsRND2[] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000};
+    float binsRND0[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
+    float binsRND1[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
+    float binsRND2[] = {0,40,60,70,80,90,100,110,120,130,150,200,250};
 
-    float binsRND2dx[] = {0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000}; //mjj
-    float binsRND2dy[] = {0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0}; // dEtajj
-    
+
     int  binnum0 = sizeof(bins0)/sizeof(Float_t) - 1;
     int  binnum1 = sizeof(bins1)/sizeof(Float_t) - 1;
 
@@ -240,8 +236,6 @@ int main(int argc, char** argv) {
     int  binnumRND0 = sizeof(binsRND0)/sizeof(Float_t) - 1;
     int  binnumRND1 = sizeof(binsRND1)/sizeof(Float_t) - 1;
     int  binnumRND2 = sizeof(binsRND2)/sizeof(Float_t) - 1;
-    int  binnumRND2dx = sizeof(binsRND2dx)/sizeof(Float_t) -1;
-    int  binnumRND2dy = sizeof(binsRND2dy)/sizeof(Float_t) -1;
 
     // Categories
     TH1F* h_0jet = new TH1F ("h_0jet", "h_0jet", binnum0, bins0); h_0jet->Sumw2();
@@ -292,10 +286,6 @@ int main(int argc, char** argv) {
     std::vector<TH1F*> h1_rndAISS;
     std::vector<TH1F*> h2_rndAISS;
 
-    std::vector<TH2F*> h3_rndOS;
-    std::vector<TH2F*> h3_rndSS;
-    std::vector<TH2F*> h3_rndAIOS;
-    std::vector<TH2F*> h3_rndAISS;
 
     TString postfix="";
     //For shape systematics
@@ -381,40 +371,32 @@ int main(int argc, char** argv) {
       h_trgSF_RF.push_back(new TH1F (HTRGSFRF.str().c_str(),"trgSF_RF", 100,0.9,1.5)); h_trgSF_RF[k]->Sumw2();
       h_trgSF_FF.push_back(new TH1F (HTRGSFFF.str().c_str(),"trgSF_FF", 100,0.9,1.5)); h_trgSF_FF[k]->Sumw2();
       // tmp histogram for R&D
-      std::string rndobs = "";
+      std::string rndobs = "m_sv";
       std::ostringstream H0RNDOS; H0RNDOS << "h0_rndOS" << k;
       std::ostringstream H1RNDOS; H1RNDOS << "h1_rndOS" << k;
       std::ostringstream H2RNDOS; H2RNDOS << "h2_rndOS" << k;
-      std::ostringstream H3RNDOS; H3RNDOS << "h3_rndOS" << k;
       h0_rndOS.push_back(new TH1F (H0RNDOS.str().c_str(), rndobs.c_str(), binnumRND0, binsRND0)); h0_rndOS[k]->Sumw2();
       h1_rndOS.push_back(new TH1F (H1RNDOS.str().c_str(), rndobs.c_str(), binnumRND1, binsRND1)); h1_rndOS[k]->Sumw2();
       h2_rndOS.push_back(new TH1F (H2RNDOS.str().c_str(), rndobs.c_str(), binnumRND2, binsRND2)); h2_rndOS[k]->Sumw2();
-      //h3_rndOS.push_back(new TH2F (H3RNDOS.str().c_str(), rndobs.c_str(), binnum21,bins21,binnum21,bins21)); h3_rndOS[k]->Sumw2();
-      h3_rndOS.push_back(new TH2F (H3RNDOS.str().c_str(), rndobs.c_str(), binnumRND2dx,binsRND2dx,binnumRND2dy,binsRND2dy)); h3_rndOS[k]->Sumw2();
       std::ostringstream H0RNDSS; H0RNDSS << "h0_rndSS" << k;
       std::ostringstream H1RNDSS; H1RNDSS << "h1_rndSS" << k;
       std::ostringstream H2RNDSS; H2RNDSS << "h2_rndSS" << k;
-      std::ostringstream H3RNDSS; H3RNDSS << "h3_rndSS" << k;
       h0_rndSS.push_back(new TH1F (H0RNDSS.str().c_str(), rndobs.c_str(), binnumRND0, binsRND0)); h0_rndSS[k]->Sumw2();
       h1_rndSS.push_back(new TH1F (H1RNDSS.str().c_str(), rndobs.c_str(), binnumRND1, binsRND1)); h1_rndSS[k]->Sumw2();
       h2_rndSS.push_back(new TH1F (H2RNDSS.str().c_str(), rndobs.c_str(), binnumRND2, binsRND2)); h2_rndSS[k]->Sumw2();
-      h3_rndSS.push_back(new TH2F (H3RNDSS.str().c_str(), rndobs.c_str(), binnumRND2dx,binsRND2dx,binnumRND2dy,binsRND2dy)); h3_rndSS[k]->Sumw2();
       std::ostringstream H0RNDAIOS; H0RNDAIOS << "h0_rndAIOS" << k;
       std::ostringstream H1RNDAIOS; H1RNDAIOS << "h1_rndAIOS" << k;
       std::ostringstream H2RNDAIOS; H2RNDAIOS << "h2_rndAIOS" << k;
-      std::ostringstream H3RNDAIOS; H3RNDAIOS << "h3_rndAIOS" << k;
       h0_rndAIOS.push_back(new TH1F (H0RNDAIOS.str().c_str(), rndobs.c_str(), binnumRND0, binsRND0)); h0_rndAIOS[k]->Sumw2();
       h1_rndAIOS.push_back(new TH1F (H1RNDAIOS.str().c_str(), rndobs.c_str(), binnumRND1, binsRND1)); h1_rndAIOS[k]->Sumw2();
       h2_rndAIOS.push_back(new TH1F (H2RNDAIOS.str().c_str(), rndobs.c_str(), binnumRND2, binsRND2)); h2_rndAIOS[k]->Sumw2();
-      h3_rndAIOS.push_back(new TH2F (H3RNDAIOS.str().c_str(), rndobs.c_str(), binnumRND2dx,binsRND2dx,binnumRND2dy,binsRND2dy)); h3_rndAIOS[k]->Sumw2();
       std::ostringstream H0RNDAISS; H0RNDAISS << "h0_rndAISS" << k;
       std::ostringstream H1RNDAISS; H1RNDAISS << "h1_rndAISS" << k;
       std::ostringstream H2RNDAISS; H2RNDAISS << "h2_rndAISS" << k;
-      std::ostringstream H3RNDAISS; H3RNDAISS << "h3_rndAISS" << k;
       h0_rndAISS.push_back(new TH1F (H0RNDAISS.str().c_str(), rndobs.c_str(), binnumRND0, binsRND0)); h0_rndAISS[k]->Sumw2();
       h1_rndAISS.push_back(new TH1F (H1RNDAISS.str().c_str(), rndobs.c_str(), binnumRND1, binsRND1)); h1_rndAISS[k]->Sumw2();
       h2_rndAISS.push_back(new TH1F (H2RNDAISS.str().c_str(), rndobs.c_str(), binnumRND2, binsRND2)); h2_rndAISS[k]->Sumw2();
-      h3_rndAISS.push_back(new TH2F (H3RNDAISS.str().c_str(), rndobs.c_str(), binnumRND2dx,binsRND2dx,binnumRND2dy,binsRND2dy)); h3_rndAISS[k]->Sumw2();
+      
     }
     
     TString postfixTES[12]={"_CMS_scale_t_13TeVDown","_CMS_scale_t_13TeVUp","_CMS_scale_t_1prong_13TeVDown","_CMS_scale_t_1prong_13TeVUp","_CMS_scale_t_1prong1pizero_13TeVDown","_CMS_scale_t_1prong1pizero_13TeVUp","_CMS_scale_t_3prong_13TeVDown","_CMS_scale_t_3prong_13TeVUp","_CMS_scale_met_unclustered_13TeVDown","_CMS_scale_met_unclustered_13TeVUp","_CMS_scale_met_clustered_13TeVDown","_CMS_scale_met_clustered_13TeVUp"};
@@ -459,9 +441,6 @@ int main(int argc, char** argv) {
       float m_sv = scenario.get_m_sv();
       float pt_sv = scenario.get_pt_sv();
       float mjj = scenario.get_mjj();
-      float ME_sm_VBF = scenario.get_ME_sm_VBF();
-      float ME_sm_ggH = scenario.get_ME_sm_ggH();
-      float ME_bkg = scenario.get_ME_bkg();
 
       // mytau1 is the highest pT tau
       float charge1=q_1;
@@ -667,25 +646,6 @@ int main(int argc, char** argv) {
 	float var2=m_sv; 
 	float var1_1=pt_sv;
 
-	if (jpt_1<30) {jpt_1=-9999.0; jeta_1=-9999.0; jphi_1=-9999.0; mjj = -10000.0000000000; }
-	if (jpt_2<30) {jpt_2=-9999.0; jeta_2=-9999.0; jphi_2=-9999.0; mjj = -10000.0000000000; }
-	/*
-	if (jpt_1<30) {
-	  std::cout << "njets : " << njets << std::endl;
-	  std::cout << jpt_1 << "\t" << jeta_1 <<"\t" << jphi_1 << std::endl;
-	  //jpt_1=-9999.0; jeta_1=-9999.0; jphi_1=-9999.0; 
-	}
-		
-	if (jpt_2<30) {
-	  //std::cout << jpt_1 << "\t" << myjet1.Eta() <<"\t" << myjet1.Phi() << std::endl;
-	  if (njets==0) {
-	    //std::cout << jpt_2<< "\t" << jeta_2 << "\t" << jphi_2 << std::endl;
-	    //std::cout << njets << std::endl << std::endl;
-	    //jpt_1=-9999.0; jeta_1=-9999.0; jphi_1=-9999.0; 
-	  }
-	}
-	*/
-	//if (jpt_2<30) {jpt_2=-9999.0; jeta_2=-9999.0; jphi_2=-9999.0;}
 	TLorentzVector myjet1;
 	myjet1.SetPtEtaPhiM(jpt_1,jeta_1,jphi_1,0);
 	//myjet1.SetPtEtaPhiM(scenario.get_jpt_1(),jeta_1,jphi_1,0);
@@ -694,15 +654,10 @@ int main(int argc, char** argv) {
 	//myjet2.SetPtEtaPhiM(scenario.get_jpt_2(),jeta_2,jphi_2,0);
 	TLorentzVector jets=myjet2+myjet1;
 	//mjj = jets.M();
-	float normMELAvbf = ME_sm_VBF/(ME_sm_VBF+45*ME_bkg);
-	float normMELAggh = ME_sm_ggH/(ME_sm_ggH+45*ME_bkg);
-	float normMELAvbfByggh = ME_sm_VBF/(ME_sm_ggH+ME_sm_VBF);
-	float normMELAgghByvbf = ME_sm_ggH/(ME_sm_VBF+ME_sm_ggH);
-	float normtest = ME_sm_VBF/(ME_sm_VBF+35*ME_bkg);
-	//float normtest = ME_sm_ggH/(ME_sm_ggH+1*ME_bkg);
+	float normMELA = ME_sm_VBF/(ME_sm_VBF+45*ME_bkg);
+	
 	//std::cout << mjj << "\t" << jets.M() << "\t" << mjj/jets.M() << std::endl;
-
-	float var1_2=ME_sm_ggH/(ME_sm_ggH+200*ME_bkg);//normMELAvbf;//normtest;//normMELAvbfByggh;//mjj;//normMELA;  //Dbkg_VBF;//mjj; 
+	float var1_2=mjj;//normMELA;  //Dbkg_VBF;//mjj; 
 	TLorentzVector myrawmet;
 	myrawmet.SetPtEtaPhiM(met,0,metphi,0);
 	//myrawmet.SetPtEtaPhiM(scenario.get_met(),0,scenario.get_metphi(),0);
@@ -749,7 +704,7 @@ int main(int argc, char** argv) {
 	  var1_2 = massejets[k]; //KK for now not available in trees
 	}
 
-	if (tes==1 && var1_2==normMELAvbf){ 
+	if (tes==1 && var1_2==normMELA){ 
 	  if (text) {std::cout << "------------------------------ var1_2 is replaced to MELA ------------------------------" << std::endl;text=false;}
 	  if (k==8) var1_2=ME_sm_VBF_UncMet_DOWN/(ME_sm_VBF_UncMet_DOWN+45*ME_bkg_UncMet_DOWN);
 	  if (k==9) var1_2=ME_sm_VBF_UncMet_UP/(ME_sm_VBF_UncMet_UP+45*ME_bkg_UncMet_UP);
@@ -779,12 +734,9 @@ int main(int argc, char** argv) {
 	
 	if (njets==0) is_0jet=true;
 	if (njets==1 || (njets>=2 && (!(Higgs.Pt()>100 && std::abs(myjet1.Eta()-myjet2.Eta())>2.5)))) is_boosted=true; 
-	//if (njets>=2 && Higgs.Pt()>100 && std::abs(myjet1.Eta()-myjet2.Eta())>2.5) is_VBF=true;	
-	if (njets>=2 && mjj<300) is_VBF=true;
+	if (njets>=2 && Higgs.Pt()>100 && std::abs(myjet1.Eta()-myjet2.Eta())>2.5) is_VBF=true;
 	if (njets==1) is_1jet=true;
-
 	if (njets>=2) is_2jets=true;
-	//if (njets>=2 and mjj<300) is_2jets=true;
 
 	// Z mumu SF 
 	if (is_boosted && (sample=="DY" || sample=="ZTT" || sample=="ZLL" || sample=="ZL" || sample=="ZJ" || sample=="EWKZLL" || sample=="EWKZNuNu")) 
@@ -794,7 +746,7 @@ int main(int argc, char** argv) {
 
 	if (sample=="data_obs") {aweight=1.0; weight2=1.0;}
         
-	//************************* Fill histograms ********************//
+	//************************* Fill histograms **********************
 	//////////////////////////////////////////////////////////////////
 	//                                                              //
 	//  - Variable info -                                           //
@@ -805,13 +757,9 @@ int main(int argc, char** argv) {
 	//   var1_M* : vbf -> MELA obs                                  //
 	//                                                              //
 	//////////////////////////////////////////////////////////////////
-	//if(signalRegion) std::cout << is_VBF << "\t" << signalRegion << "\t" << charge1*charge2 << "\t" << var1_2 << std::endl;
-	//if (signalRegion && is_VBF && charge1*charge2) std::cout << var1_2 << std::endl;
 	float var = var2; 
-	float varRND = mjj;//abs(myjet1.Eta()-myjet2.Eta());		
-	float varRNDx = mjj;
-	float varRNDy = abs(myjet1.Eta()-myjet2.Eta());		
-	//std::cout << njets << "\t" << varRND << "\t" << jpt_1 << std::endl;
+	float varRND = m_sv;
+
 	if (selection){
 	  // ################### signalRegion && OS ####################
 	  if (is_0jet && signalRegion && charge1*charge2<0){
@@ -842,10 +790,7 @@ int main(int argc, char** argv) {
 	  // tmp histograms for R&D
 	  if (is_0jet && signalRegion && charge1*charge2<0) h0_rndOS[k]->Fill(varRND,weight2*aweight);
 	  if (is_1jet && signalRegion && charge1*charge2<0) h1_rndOS[k]->Fill(varRND,weight2*aweight);
-	  if (is_2jets && signalRegion && charge1*charge2<0) {
-	    h2_rndOS[k]->Fill(varRND,weight2*aweight);
-	    h3_rndOS[k]->Fill(varRNDx,varRNDy,weight2*aweight);	    
-	  }
+	  if (is_2jets && signalRegion && charge1*charge2<0) h2_rndOS[k]->Fill(varRND,weight2*aweight);
 	  
 	  
 	  // ################### signalRegion && SS ####################
@@ -853,7 +798,7 @@ int main(int argc, char** argv) {
 	    h0_SS[k]->Fill(var,weight2*aweight);
 	  if (is_boosted && signalRegion && charge1*charge2>0)
 	    h1_SS[k]->Fill(var1_1,var2,weight2*aweight);
-	  if (is_VBF && signalRegion && charge1*charge2) {
+	  if (is_VBF && signalRegion && charge1*charge2>0) {
 	    h2_SS[k]->Fill(var1_2,var2,weight2*aweight);
 	  }
 	  if (is_VH && signalRegion && charge1*charge2>0)
@@ -864,10 +809,7 @@ int main(int argc, char** argv) {
 	  // tmp histograms for R&D
 	  if (is_0jet && signalRegion && charge1*charge2>0) h0_rndSS[k]->Fill(varRND,weight2*aweight);
 	  if (is_1jet && signalRegion && charge1*charge2>0) h1_rndSS[k]->Fill(varRND,weight2*aweight);
-	  if (is_2jets && signalRegion && charge1*charge2>0) {
-	    h2_rndSS[k]->Fill(varRND,weight2*aweight);
-	    h3_rndSS[k]->Fill(varRNDx,varRNDy,weight2*aweight);	    
-	  }
+	  if (is_2jets && signalRegion && charge1*charge2>0) h2_rndSS[k]->Fill(varRND,weight2*aweight);
 
 	  // ################### ai-Region && OS ####################
 	  if (is_0jet && charge1*charge2<0 && aiRegion)
@@ -885,17 +827,15 @@ int main(int argc, char** argv) {
 	  // tmp histograms for R&D
 	  if (is_0jet && aiRegion && charge1*charge2<0) h0_rndAIOS[k]->Fill(varRND,weight2*aweight);
 	  if (is_1jet && aiRegion && charge1*charge2<0) h1_rndAIOS[k]->Fill(varRND,weight2*aweight);
-	  if (is_2jets && aiRegion && charge1*charge2<0) {
-	    h2_rndAIOS[k]->Fill(varRND,weight2*aweight);
-	    h3_rndAISS[k]->Fill(varRNDx,varRNDy,weight2*aweight);	    
-	  }
+	  if (is_2jets && aiRegion && charge1*charge2<0) h2_rndAIOS[k]->Fill(varRND,weight2*aweight);
+
 	  
 	  // ################### ai-Region && SS ####################
 	  if (is_0jet && charge1*charge2>0 && aiRegion)
 	    h0_AISS[k]->Fill(var,weight2*aweight);
 	  if (is_boosted && charge1*charge2>0 && aiRegion)
 	    h1_AISS[k]->Fill(var1_1,var2,weight2*aweight);
-	  if (is_VBF && charge1*charge2 && aiRegion) {
+	  if (is_VBF && charge1*charge2>0 && aiRegion) {
 	    h2_AISS[k]->Fill(var1_2,var2,weight2*aweight);
 	  }
 	  if (is_VH && charge1*charge2>0 && aiRegion)
@@ -906,10 +846,8 @@ int main(int argc, char** argv) {
 	  // tmp histograms for R&D
 	  if (is_0jet && aiRegion && charge1*charge2>0) h0_rndAISS[k]->Fill(varRND,weight2*aweight);
 	  if (is_1jet && aiRegion && charge1*charge2>0) h1_rndAISS[k]->Fill(varRND,weight2*aweight);
-	  if (is_2jets && aiRegion && charge1*charge2>0) {
-	    h2_rndAISS[k]->Fill(varRND,weight2*aweight);
-	    h3_rndAISS[k]->Fill(varRNDx,varRNDy,weight2*aweight);	    
-	  }
+	  if (is_2jets && aiRegion && charge1*charge2>0) h2_rndAISS[k]->Fill(varRND,weight2*aweight);
+
 	  // ################### trg SF ####################
 	  h_trgSF1[k]->Fill(sf_trg1);
 	  h_trgSF2[k]->Fill(sf_trg2);
@@ -984,20 +922,15 @@ int main(int argc, char** argv) {
     TDirectory *RND0jetOS = fout->mkdir("ttOS_0jetR");
     TDirectory *RND1jetOS = fout->mkdir("ttOS_boostedR");
     TDirectory *RND2jetOS = fout->mkdir("ttOS_vbfR");
-    TDirectory *RND3jetOS = fout->mkdir("ttOS_2dR");
     TDirectory *RND0jetSS = fout->mkdir("ttSS_0jetR");
     TDirectory *RND1jetSS = fout->mkdir("ttSS_boostedR");
     TDirectory *RND2jetSS = fout->mkdir("ttSS_vbfR");
-    TDirectory *RND3jetSS = fout->mkdir("ttSS_2dR");
     TDirectory *RND0jetAIOS = fout->mkdir("AIOS_0jetR");
     TDirectory *RND1jetAIOS = fout->mkdir("AIOS_boostedR");
     TDirectory *RND2jetAIOS = fout->mkdir("AIOS_vbfR");
-    TDirectory *RND3jetAIOS = fout->mkdir("AIOS_2dR");
     TDirectory *RND0jetAISS = fout->mkdir("AISS_0jetR");
     TDirectory *RND1jetAISS = fout->mkdir("AISS_boostedR");
     TDirectory *RND2jetAISS = fout->mkdir("AISS_vbfR");
-    TDirectory *RND3jetAISS = fout->mkdir("AISS_2dR");
-
 
     for (int k=0; k<nbhist; ++k){
       if (tes==10) postfix="_CMS_htt_dyShape_13TeVUp";
@@ -1042,9 +975,6 @@ int main(int argc, char** argv) {
       RND2jetOS->cd();
       h2_rndOS[k]->SetName(name.c_str());
       h2_rndOS[k]->Write();
-      RND3jetOS->cd();
-      h3_rndOS[k]->SetName(name.c_str());
-      h3_rndOS[k]->Write();
 
       RND0jetSS->cd();
       h0_rndSS[k]->SetName(name.c_str());
@@ -1055,9 +985,6 @@ int main(int argc, char** argv) {
       RND2jetSS->cd();
       h2_rndSS[k]->SetName(name.c_str());
       h2_rndSS[k]->Write();
-      RND3jetSS->cd();
-      h3_rndSS[k]->SetName(name.c_str());
-      h3_rndSS[k]->Write();
 
       RND0jetAIOS->cd();
       h0_rndAIOS[k]->SetName(name.c_str());
@@ -1068,9 +995,6 @@ int main(int argc, char** argv) {
       RND2jetAIOS->cd();
       h2_rndAIOS[k]->SetName(name.c_str());
       h2_rndAIOS[k]->Write();
-      RND3jetAIOS->cd();
-      h3_rndAIOS[k]->SetName(name.c_str());
-      h3_rndAIOS[k]->Write();
 
       RND0jetAISS->cd();
       h0_rndAISS[k]->SetName(name.c_str());
@@ -1081,9 +1005,6 @@ int main(int argc, char** argv) {
       RND2jetAISS->cd();
       h2_rndAISS[k]->SetName(name.c_str());
       h2_rndAISS[k]->Write();
-      RND3jetAISS->cd();
-      h3_rndAISS[k]->SetName(name.c_str());
-      h3_rndAISS[k]->Write();
 
       OS0jet_tt->cd();
       h0_OS[k]->SetName(name.c_str()+postfix);
